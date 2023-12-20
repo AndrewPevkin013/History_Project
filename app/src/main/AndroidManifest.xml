@@ -37,6 +37,9 @@
 
           <category android:name="android.intent.category.LAUNCHER" />
         </intent-filter>
+        <meta-data
+          android:name="com.yandex.yandexmapkit.MapKitFactoryOptions"
+          android:value="3d98c528-9e5f-4cf8-847c-adb5af11b2df" />
       </activity>
     </application>
 

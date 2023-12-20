@@ -1,11 +1,18 @@
 package com.example.history_project_11
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.activity.ComponentActivity
+import androidx.appcompat.app.AlertDialog
 import com.yandex.mapkit.Animation
 import com.yandex.mapkit.MapKitFactory
 import com.yandex.mapkit.geometry.Point
 import com.yandex.mapkit.map.CameraPosition
+import com.yandex.mapkit.map.PlacemarkMapObject
 import com.yandex.mapkit.mapview.MapView
 
 class HomeActivity : ComponentActivity() {
@@ -40,11 +47,11 @@ class HomeActivity : ComponentActivity() {
     val attractionsCursor = databaseHelper.getAllAttractions()
 
     while (attractionsCursor.moveToNext()) {
-      val name = attractionsCursor.getString(attractionsCursor.getColumnIndex(DatabaseHelper.COLUMN_NAME))
-      val description = attractionsCursor.getString(attractionsCursor.getColumnIndex(DatabaseHelper.COLUMN_DESCRIPTION))
-      val latitude = attractionsCursor.getDouble(attractionsCursor.getColumnIndex(DatabaseHelper.COLUMN_LATITUDE))
-      val longitude = attractionsCursor.getDouble(attractionsCursor.getColumnIndex(DatabaseHelper.COLUMN_LONGITUDE))
-      val photo = attractionsCursor.getBlob(attractionsCursor.getColumnIndex(DatabaseHelper.COLUMN_PHOTO))
+      val name = attractionsCursor.getString(attractionsCursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_NAME))
+      val description = attractionsCursor.getString(attractionsCursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_DESCRIPTION))
+      val latitude = attractionsCursor.getDouble(attractionsCursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_LATITUDE))
+      val longitude = attractionsCursor.getDouble(attractionsCursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_LONGITUDE))
+      val photo = attractionsCursor.getString(attractionsCursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_PHOTO))
 
       // Создаем метку и добавляем в коллекцию
       val marker = createMarker(
@@ -53,13 +60,13 @@ class HomeActivity : ComponentActivity() {
         description,
         photo
       )
-      mapObjects.add(marker)
+      mapview.map.mapObjects.addPlacemark(marker)
     }
 
     attractionsCursor.close()
   }
 
-  private fun createMarker(point: com.yandex.mapkit.geometry.Point, title: String, description: String, photoResId: Int): PlacemarkMapObject {
+  private fun createMarker(point: Point, title: String, description: String, photoPath: String): Placemark {
     val view = LayoutInflater.from(this).inflate(R.layout.custom_marker_layout, null)
     val titleTextView: TextView = view.findViewById(R.id.titleTextView)
     val descriptionTextView: TextView = view.findViewById(R.id.descriptionTextView)
@@ -67,12 +74,47 @@ class HomeActivity : ComponentActivity() {
 
     titleTextView.text = title
     descriptionTextView.text = description
-    photoImageView.setImageResource(photoResId)
+
+    // Преобразуйте путь к файлу в Bitmap
+    val bitmap = BitmapFactory.decodeFile(photoPath)
+    photoImageView.setImageBitmap(bitmap)
 
     val placemarkMapObject = mapview.map.mapObjects.addPlacemark(point)
-    placemarkMapObject.setView(view)
+
+    // Используйте ViewProvider для установки макета
+    placemarkMapObject.setViewProvider(
+      CustomViewProvider(view)
+    )
+
+    // Добавьте обработчик событий для метки
+    placemarkMapObject.addTapListener { _, _ ->
+      // Отобразите окно с фото, названием и описанием
+      showAttractionDetails(title, description, bitmap)
+      true
+    }
 
     return placemarkMapObject
+  }
+
+  // Метод для отображения окна с деталями достопримечательности
+  private fun showAttractionDetails(title: String, description: String, photo: Bitmap) {
+    val dialogBuilder = AlertDialog.Builder(this)
+    val view = layoutInflater.inflate(R.layout.attraction_details_layout, null)
+
+    // Настройте элементы интерфейса в соответствии с вашим макетом
+    val titleTextView: TextView = view.findViewById(R.id.attractionTitleTextView)
+    val descriptionTextView: TextView = view.findViewById(R.id.attractionDescriptionTextView)
+    val photoImageView: ImageView = view.findViewById(R.id.attractionPhotoImageView)
+
+    titleTextView.text = title
+    descriptionTextView.text = description
+    photoImageView.setImageBitmap(photo)
+
+    dialogBuilder.setView(view)
+      .setPositiveButton("Закрыть") { dialog, _ -> dialog.dismiss() }
+
+    val alertDialog = dialogBuilder.create()
+    alertDialog.show()
   }
 
   override fun onStop() {

@@ -11,7 +11,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
   companion object {
     const val DATABASE_NAME = "attractionsPD.db"
     const val DATABASE_VERSION = 1
-    const val TABLE_ATTRACTIONS = "attractions"
+    const val TABLE_ATTRACTIONS = "attractionsPD"
     const val COLUMN_ID = "_id"
     const val COLUMN_NAME = "name"
     const val COLUMN_DESCRIPTION = "description"
@@ -28,7 +28,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
                 $COLUMN_DESCRIPTION TEXT,
                 $COLUMN_LATITUDE REAL,
                 $COLUMN_LONGITUDE REAL,
-                $COLUMN_PHOTO BLOB
+                $COLUMN_PHOTO TEXT
             )
         """
     db?.execSQL(createTableQuery)

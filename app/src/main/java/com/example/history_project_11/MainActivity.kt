@@ -1,6 +1,8 @@
 package com.example.history_project_11
 
+import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,25 +20,16 @@ import com.yandex.mapkit.map.CameraPosition
 import com.yandex.mapkit.mapview.MapView
 
 class MainActivity : ComponentActivity() {
-    lateinit var mapview: MapView
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        MapKitFactory.setApiKey("3d98c528-9e5f-4cf8-847c-adb5af11b2df")
-        MapKitFactory.initialize(this)
-        setContentView(R.layout.activity_main)
-        mapview = findViewById(R.id.mapview)
-        mapview.map.move(CameraPosition(com.yandex.mapkit.geometry.Point(59.951529, 30.315464), 11.0f, 0.0f, 0.0f), Animation(Animation.Type.SMOOTH, 300f), null)
-    }
+  lateinit var mapview: MapView
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    setContentView(R.layout.splash)
 
-  override fun onStop() {
-    mapview.onStop()
-    MapKitFactory.getInstance().onStop()
-    super.onStop()
-  }
+    Handler().postDelayed({
+      val intent = Intent(this, HomeActivity::class.java)
+      startActivity(intent)
+      finish()
+    }, 5000)
 
-  override fun onStart() {
-    mapview.onStart()
-    MapKitFactory.getInstance().onStart()
-    super.onStart()
   }
 }

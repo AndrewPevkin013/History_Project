@@ -76,4 +76,6 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
     implementation("com.yandex.android:maps.mobile:4.1.0-full")
+    implementation("org.mapsforge:mapsforge-map-android:0.12.0")
+    implementation("org.mapsforge:mapsforge-map:0.12.0")
 }

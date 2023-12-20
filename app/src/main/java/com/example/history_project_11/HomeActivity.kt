@@ -3,7 +3,6 @@ package com.example.history_project_11
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.ComponentActivity
@@ -12,8 +11,8 @@ import com.yandex.mapkit.Animation
 import com.yandex.mapkit.MapKitFactory
 import com.yandex.mapkit.geometry.Point
 import com.yandex.mapkit.map.CameraPosition
-import com.yandex.mapkit.map.PlacemarkMapObject
 import com.yandex.mapkit.mapview.MapView
+import com.yandex.runtime.image.ImageProvider
 
 class HomeActivity : ComponentActivity() {
 
@@ -29,21 +28,14 @@ class HomeActivity : ComponentActivity() {
     databaseHelper = DatabaseHelper(this)
 
     mapview = findViewById(R.id.mapview)
-    mapview.map.move(CameraPosition(
-      com.yandex.mapkit.geometry.Point(59.966169, 30.306153), // Петрограйский район
-      11.0f,
-      0.0f,
-      0.0f
-    ), Animation(Animation.Type.SMOOTH, 1f), null)
+    mapview.map.move(CameraPosition(Point(59.966169, 30.306153), 11.0f, 0.0f, 0.0f),
+      Animation(Animation.Type.SMOOTH, 1f), null)
 
     // Добавление меток
     addMarkersFromDatabase()
   }
 
   private fun addMarkersFromDatabase() {
-    val mapObjects = mapview.map.mapObjects.addCollection()
-
-    // Получаем данные из базы данных
     val attractionsCursor = databaseHelper.getAllAttractions()
 
     while (attractionsCursor.moveToNext()) {
@@ -51,52 +43,22 @@ class HomeActivity : ComponentActivity() {
       val description = attractionsCursor.getString(attractionsCursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_DESCRIPTION))
       val latitude = attractionsCursor.getDouble(attractionsCursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_LATITUDE))
       val longitude = attractionsCursor.getDouble(attractionsCursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_LONGITUDE))
-      val photo = attractionsCursor.getString(attractionsCursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_PHOTO))
+      val photoPath = attractionsCursor.getString(attractionsCursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_PHOTO))
 
-      // Создаем метку и добавляем в коллекцию
-      val marker = createMarker(
-        com.yandex.mapkit.geometry.Point(latitude, longitude),
-        name,
-        description,
-        photo
-      )
-      mapview.map.mapObjects.addPlacemark(marker)
+      // Создание PlacemarkMapObject для каждой достопримечательности
+      val placemark = mapview.map.mapObjects.addPlacemark(Point(latitude, longitude))
+      placemark.setIcon(ImageProvider.fromFile(photoPath)) // Установка изображения метки
+
+      // Добавление события при нажатии на метку
+      placemark.addTapListener { _, _ ->
+        // Отображение окна с деталями достопримечательности
+        val photoBitmap = BitmapFactory.decodeFile(photoPath)
+        showAttractionDetails(name, description, photoBitmap)
+        true
+      }
     }
-
-    attractionsCursor.close()
   }
 
-  private fun createMarker(point: Point, title: String, description: String, photoPath: String): Placemark {
-    val view = LayoutInflater.from(this).inflate(R.layout.custom_marker_layout, null)
-    val titleTextView: TextView = view.findViewById(R.id.titleTextView)
-    val descriptionTextView: TextView = view.findViewById(R.id.descriptionTextView)
-    val photoImageView: ImageView = view.findViewById(R.id.photoImageView)
-
-    titleTextView.text = title
-    descriptionTextView.text = description
-
-    // Преобразуйте путь к файлу в Bitmap
-    val bitmap = BitmapFactory.decodeFile(photoPath)
-    photoImageView.setImageBitmap(bitmap)
-
-    val placemarkMapObject = mapview.map.mapObjects.addPlacemark(point)
-
-    // Используйте ViewProvider для установки макета
-    placemarkMapObject.setViewProvider(
-      CustomViewProvider(view)
-    )
-
-    // Добавьте обработчик событий для метки
-    placemarkMapObject.addTapListener { _, _ ->
-      // Отобразите окно с фото, названием и описанием
-      showAttractionDetails(title, description, bitmap)
-      true
-    }
-
-    return placemarkMapObject
-  }
-
-  // Метод для отображения окна с деталями достопримечательности
   private fun showAttractionDetails(title: String, description: String, photo: Bitmap) {
     val dialogBuilder = AlertDialog.Builder(this)
     val view = layoutInflater.inflate(R.layout.attraction_details_layout, null)
@@ -129,4 +91,5 @@ class HomeActivity : ComponentActivity() {
     super.onStart()
   }
 }
+
 

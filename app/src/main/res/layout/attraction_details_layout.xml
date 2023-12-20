@@ -23,9 +23,9 @@
     android:layout_width="200dp"
     android:layout_height="200dp"
     android:scaleType="centerCrop"
-    android:src="@drawable/default_photo" />
+    android:src="@drawable/movie" />
 
+<!-- TODO: фото берется из папки, а не из БД, надо подумать над исправлением. Можно попробовать в классе реализовать вывод фото. -->
   <!-- Добавьте другие элементы по необходимости -->
 
 </LinearLayout>
-

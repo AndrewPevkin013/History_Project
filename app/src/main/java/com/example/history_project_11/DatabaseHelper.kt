@@ -13,10 +13,10 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
     const val DATABASE_VERSION = 1
     const val TABLE_ATTRACTIONS = "attractionsPD"
     const val COLUMN_ID = "_id"
-    const val COLUMN_NAME = "name"
-    const val COLUMN_DESCRIPTION = "description"
     const val COLUMN_LATITUDE = "latitude"
     const val COLUMN_LONGITUDE = "longitude"
+    const val COLUMN_DESCRIPTION = "description"
+    const val COLUMN_NAME = "name"
     const val COLUMN_PHOTO = "photo"
   }
 
@@ -24,10 +24,10 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
     val createTableQuery = """
             CREATE TABLE $TABLE_ATTRACTIONS (
                 $COLUMN_ID INTEGER PRIMARY KEY AUTOINCREMENT,
-                $COLUMN_NAME TEXT,
-                $COLUMN_DESCRIPTION TEXT,
                 $COLUMN_LATITUDE REAL,
                 $COLUMN_LONGITUDE REAL,
+                $COLUMN_DESCRIPTION TEXT,
+                $COLUMN_NAME TEXT,
                 $COLUMN_PHOTO TEXT
             )
         """
@@ -41,10 +41,10 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
 
   fun insertAttraction(name: String, description: String, latitude: Double, longitude: Double, photoResId: Int): Long {
     val values = ContentValues().apply {
-      put(COLUMN_NAME, name)
-      put(COLUMN_DESCRIPTION, description)
       put(COLUMN_LATITUDE, latitude)
       put(COLUMN_LONGITUDE, longitude)
+      put(COLUMN_DESCRIPTION, description)
+      put(COLUMN_NAME, name)
       put(COLUMN_PHOTO, photoResId)
     }
 

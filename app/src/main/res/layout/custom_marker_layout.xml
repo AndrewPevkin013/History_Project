@@ -22,7 +22,6 @@
     android:layout_width="422dp"
     android:layout_height="79dp"
     android:text="фотограия" />
-  <!-- Добавьте другие элементы по необходимости, например, изображение или дополнительный текст -->
 
 </LinearLayout>
 

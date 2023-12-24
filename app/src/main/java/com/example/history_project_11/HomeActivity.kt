@@ -1,6 +1,7 @@
 package com.example.history_project_11
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.ImageButton
@@ -25,6 +26,13 @@ class HomeActivity : ComponentActivity() {
   private lateinit var closeButton: ImageButton
   private var selectedMarker: MapObject? = null
 
+  private val markerInfoList = listOf(
+    MarkerInfo(R.drawable.logo, "Название места 1", "Описание места 1"),
+    MarkerInfo(R.drawable.movie, "Название места 2", "Описание места 2"),
+    MarkerInfo(R.drawable.ic_close, "Название места 3", "Описание места 3"),
+    // ... добавьте для каждой метки
+  )
+
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     MapKitFactory.setApiKey("3d98c528-9e5f-4cf8-847c-adb5af11b2df")
@@ -45,9 +53,8 @@ class HomeActivity : ComponentActivity() {
     addMultiplePoints()
     setListeners()
   }
-
   private fun setListeners() {
-    // Close button click listener
+    // Определитель нажатия кнопки закрытия
     closeButton.setOnClickListener {
       closeMarkerInfo()
     }
@@ -58,25 +65,26 @@ class HomeActivity : ComponentActivity() {
       Point(59.976607, 30.320863),
       Point(59.971258, 30.322857),
       Point(59.977242, 30.307253),
-      // ... (other points)
+      // ... (другие точки)
     )
 
     val imageProvider = ImageProvider.fromResource(this, R.drawable.placemark_icon)
 
-    points.forEach { point ->
+    points.forEachIndexed { index, point ->
       val placemark = mapview.map.mapObjects.addPlacemark(point, imageProvider)
 
-      // Set click listener for each placemark
+      // Добавляем отладочное сообщение для отслеживания нажатия на метку
+      Log.d("MarkerTap", "Marker added: $index")
+
       placemark.addTapListener { _, _ ->
-        // Load and display marker information
+        Log.d("MarkerTap", "Marker tapped: $index")
+        // Загрузка и отображение информации о маркере
         if (placemark == selectedMarker) {
-          // If the tapped marker is already selected, close the info window
           closeMarkerInfo()
           selectedMarker = null
         } else {
-          // If a different marker is tapped, close the existing info window
-          // and open the info window for the new marker
-          showMarkerInfo(R.drawable.logo, "Название места", "Описание места")
+          val markerInfo = markerInfoList[index]
+          showMarkerInfo(markerInfo.photoResId, markerInfo.title, markerInfo.description)
           selectedMarker = placemark
         }
         true

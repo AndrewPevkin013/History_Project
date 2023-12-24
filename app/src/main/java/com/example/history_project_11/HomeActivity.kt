@@ -1,5 +1,7 @@
 package com.example.history_project_11
 
+import android.content.pm.PackageManager
+import android.Manifest
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -8,7 +10,9 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.ComponentActivity
+import androidx.core.app.ActivityCompat
 import com.yandex.mapkit.Animation
+import com.yandex.mapkit.MapKit
 import com.yandex.mapkit.MapKitFactory
 import com.yandex.mapkit.geometry.Point
 import com.yandex.mapkit.map.CameraPosition
@@ -51,10 +55,21 @@ class HomeActivity : ComponentActivity() {
     titleTextView = findViewById(R.id.titleTextView)
     descriptionTextView = findViewById(R.id.descriptionTextView)
     closeButton = findViewById(R.id.closeButton)
-
+    requestLocationPermission()
+    val mapKit:MapKit = MapKitFactory.getInstance()
+    val locationOnMapKit = mapKit.createUserLocationLayer(mapview.mapWindow)
+    locationOnMapKit.isVisible = true
     addMultiplePoints()
     setListeners()
   }
+
+  private fun requestLocationPermission() {
+    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+      ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+      ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION), 0)
+    return
+  }
+
   private fun setListeners() {
     // Определитель нажатия кнопки закрытия
     closeButton.setOnClickListener {
@@ -64,7 +79,7 @@ class HomeActivity : ComponentActivity() {
 
   private fun addMultiplePoints() {
     val points = listOf(
-      Point(26.602565299566052, -50.71416278924256),
+      Point(26.602565299566052, -50.71416278924256), // Эти координаты не трогай
       Point(59.971258, 30.322857),
       Point(59.977242, 30.307253),
       Point(59.956191, 30.309292),

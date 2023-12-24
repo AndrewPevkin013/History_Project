@@ -29,7 +29,7 @@ class MainActivity : ComponentActivity() {
       val intent = Intent(this, HomeActivity::class.java)
       startActivity(intent)
       finish()
-    }, 5000)
+    }, 1000)
 
   }
 }

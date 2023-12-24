@@ -1,10 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  tools:context=".HomeActivity">
+
+  <!-- MapView to display the map -->
   <com.yandex.mapkit.mapview.MapView
     android:id="@+id/mapview"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"/>
+    android:layout_height="match_parent" />
 
-</LinearLayout>
+  <!-- FrameLayout for displaying marker information -->
+  <FrameLayout
+    android:id="@+id/markerInfoLayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_alignParentBottom="true"
+    android:padding="16dp"
+    android:visibility="gone">
+
+    <!-- CardView for styling the information window -->
+    <androidx.cardview.widget.CardView
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:elevation="8dp"
+      android:radius="8dp">
+
+      <!-- LinearLayout for information content -->
+      <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Close button -->
+        <ImageButton
+          android:id="@+id/closeButton"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:src="@drawable/ic_close"
+          android:background="?android:attr/selectableItemBackground"
+          android:contentDescription="Close"
+          android:layout_gravity="end"
+          android:layout_marginBottom="8dp" />
+
+        <!-- ImageView for displaying the photo -->
+        <ImageView
+          android:id="@+id/photoImageView"
+          android:layout_width="match_parent"
+          android:layout_height="200dp"
+          android:scaleType="centerCrop" />
+
+        <!-- TextViews for title and description -->
+        <TextView
+          android:id="@+id/titleTextView"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:textStyle="bold"
+          android:textSize="18sp"
+          android:layout_marginTop="8dp"
+          android:layout_marginBottom="8dp"/>
+
+        <TextView
+          android:id="@+id/descriptionTextView"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content" />
+      </LinearLayout>
+    </androidx.cardview.widget.CardView>
+  </FrameLayout>
+
+</RelativeLayout>
